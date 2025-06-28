@@ -23,7 +23,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight text-center">🧠 Sudoku Solver</h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight text-center">🧠 Sudoku Solver for my love Balauka</h1>
 
       <div className="bg-white p-4 rounded-2xl shadow-xl border-2 border-gray-300 max-w-full overflow-auto">
         <div className="grid grid-cols-9 gap-[2px]">
