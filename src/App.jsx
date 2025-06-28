@@ -21,12 +21,40 @@ export default function App() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight text-center">🧠 Sudoku Solver for my love Balauka</h1>
+  const generateSudoku = (difficulty = "easy") => {
+    const board = generateSolvedBoard();
+    const puzzle = maskBoard(board, difficulty);
+    setBoard(puzzle);
+    setSolution(null);
+  };
 
-      <div className="bg-white p-4 rounded-2xl shadow-xl border-2 border-gray-300 max-w-full overflow-auto">
-        <div className="grid grid-cols-9 gap-[2px]">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-800 to-slate-900 text-white flex flex-col items-center justify-center p-4 font-sans">
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center text-white drop-shadow-lg">🧩 Sudoku Solver for my love Balauka</h1>
+
+      <div className="mb-6 flex flex-wrap gap-3 justify-center">
+        <button
+          onClick={() => generateSudoku("easy")}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition"
+        >
+          Лёгкий
+        </button>
+        <button
+          onClick={() => generateSudoku("medium")}
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-5 py-2 rounded-full shadow-md transition"
+        >
+          Средний
+        </button>
+        <button
+          onClick={() => generateSudoku("hard")}
+          className="bg-rose-500 hover:bg-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition"
+        >
+          Сложный
+        </button>
+      </div>
+
+      <div className="bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-700 max-w-full overflow-auto">
+        <div className="grid grid-cols-9">
           {board.map((row, i) =>
             row.map((cell, j) => (
               <input
@@ -34,10 +62,10 @@ export default function App() {
                 value={board[i][j]}
                 onChange={(e) => updateCell(i, j, e.target.value)}
                 maxLength={1}
-                className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 text-center text-lg md:text-xl font-medium border border-gray-300 bg-white outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 rounded-md shadow-sm ${
-                  (i % 3 === 2 && i !== 8 ? "mb-2" : "") +
-                  (j % 3 === 2 && j !== 8 ? " mr-2" : "")
-                }`}
+                className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 text-center text-lg md:text-xl font-bold border ${
+                  (i % 3 === 2 && i !== 8 ? "border-b-4 border-b-slate-600" : "border-slate-600") +
+                  (j % 3 === 2 && j !== 8 ? " border-r-4 border-r-slate-600" : "")
+                } bg-slate-900 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200`}
               />
             ))
           )}
@@ -46,24 +74,27 @@ export default function App() {
 
       <button
         onClick={solve}
-        className="mt-6 sm:mt-8 bg-black text-white px-6 py-2 sm:px-8 sm:py-3 text-base sm:text-lg font-semibold rounded-xl hover:bg-gray-800 transition-all shadow-md"
+        className="mt-8 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 text-lg font-semibold rounded-full transition-all shadow-lg"
       >
         Решить
       </button>
 
       {solution && (
-        <div className="mt-8 sm:mt-10 text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-3">Решение</h2>
+        <div className="mt-10 text-center">
+          <h2 className="text-2xl font-bold mb-4">Решение</h2>
           {typeof solution === "string" ? (
-            <p className="text-red-600 font-semibold">{solution}</p>
+            <p className="text-red-500 font-semibold">{solution}</p>
           ) : (
-            <div className="inline-block p-4 bg-white rounded-2xl shadow-lg border border-gray-300 max-w-full overflow-auto">
-              <div className="grid grid-cols-9 gap-[2px]">
+            <div className="inline-block p-4 bg-slate-700 rounded-2xl shadow-xl border border-slate-600 max-w-full overflow-auto">
+              <div className="grid grid-cols-9">
                 {solution.map((row, i) =>
                   row.map((cell, j) => (
                     <div
                       key={`sol-${i}-${j}`}
-                      className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md text-base md:text-lg font-medium"
+                      className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center bg-slate-900 text-white border ${
+                        (i % 3 === 2 && i !== 8 ? "border-b-4 border-b-slate-600" : "border-slate-600") +
+                        (j % 3 === 2 && j !== 8 ? " border-r-4 border-r-slate-600" : "")
+                      } rounded-md text-base md:text-lg font-bold`}
                     >
                       {cell}
                     </div>
@@ -111,4 +142,25 @@ function solveSudoku(board) {
   };
 
   return solve();
+}
+
+function generateSolvedBoard() {
+  const board = Array.from({ length: 9 }, () => Array(9).fill("."));
+  solveSudoku(board);
+  return board.map(row => [...row]);
+}
+
+function maskBoard(board, difficulty) {
+  const levels = { easy: 35, medium: 45, hard: 55 };
+  const masked = board.map(row => [...row]);
+  let blanks = levels[difficulty] || 45;
+  while (blanks > 0) {
+    const i = Math.floor(Math.random() * 9);
+    const j = Math.floor(Math.random() * 9);
+    if (masked[i][j] !== "") {
+      masked[i][j] = "";
+      blanks--;
+    }
+  }
+  return masked;
 }
